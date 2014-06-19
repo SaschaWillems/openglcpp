@@ -1,3 +1,11 @@
+/*
+This code is licensed under the Mozilla Public License Version 2.0 (http://opensource.org/licenses/MPL-2.0)
+© 2014 by Sascha Willems - http://www.saschawillems.de
+
+This compute shader implements a very basic attraction based particle system that changes velocities
+to move the particles towards the target position
+*/
+
 //Include GLEW
 #include <GL/glew.h>
 
@@ -133,7 +141,7 @@ int main(void)
 			windowTitle += std::to_string(renderer.particleCount);
 			windowTitle += " particles @ ";
 			windowTitle += std::to_string(frameCounter);
-			windowTitle += " fps)";
+			windowTitle += " fps) - © 2014 by Sascha Willems (www.saschawillems.de)";
 			const char* windowCaption = windowTitle.c_str();
 			glfwSetWindowTitle(window, windowCaption);
 
