@@ -141,7 +141,7 @@ int main(void)
 			windowTitle += std::to_string(renderer.particleCount);
 			windowTitle += " particles @ ";
 			windowTitle += std::to_string(frameCounter);
-			windowTitle += " fps) - © 2014 by Sascha Willems (www.saschawillems.de)";
+			windowTitle += " fps) - (c) 2014 by Sascha Willems (www.saschawillems.de)";
 			const char* windowCaption = windowTitle.c_str();
 			glfwSetWindowTitle(window, windowCaption);
 
