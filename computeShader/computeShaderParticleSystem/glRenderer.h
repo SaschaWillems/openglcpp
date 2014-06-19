@@ -15,6 +15,7 @@ private:
 	float speedMultiplier = 0.15f;
 	bool borderEnabled = true;
 	bool colorFade = false;
+	bool pause = false;
 	float color[3];
 	float colVec[3];
 	float colorChangeTimer;

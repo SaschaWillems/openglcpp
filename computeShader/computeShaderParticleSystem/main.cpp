@@ -102,6 +102,7 @@ int main(void)
 
 	printf("\nKeys:\n");
 	printf("""r"" : reset particles at current cursor pos\n");
+	printf("""p"" : Toggle pause\n");
 	printf("""b"" : toggle viewport border for particle movement\n");
 	printf("""c"" : toggle random color fade\n");
 	printf("""+"" : increase speed\n");

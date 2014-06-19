@@ -344,13 +344,12 @@ void glRenderer::renderScene()
 	float destPosY = (float)((windowHeight - cursorY) / windowHeight - 0.5f) * 2.0f;
 
 	glUseProgram(computeshader);
-	glUniform1f(glGetUniformLocation(computeshader, "deltaT"), frameDelta * speedMultiplier);
+	glUniform1f(glGetUniformLocation(computeshader, "deltaT"), frameDelta * speedMultiplier * (pause ? 0.0f : 1.0f));
 	glUniform3f(glGetUniformLocation(computeshader, "destPos"), destPosX, destPosY, 0);
 	glUniform2f(glGetUniformLocation(computeshader, "vpDim"), 1, 1);
 	glUniform1i(glGetUniformLocation(computeshader, "borderClamp"), (int)borderEnabled);
 
 	int workingGroups = particleCount / 16;
-
 
 	glDispatchCompute(workingGroups, 1, 1);
 
@@ -395,6 +394,8 @@ void glRenderer::keyCallback(int key, int scancode, int action, int mods)
 		borderEnabled = !borderEnabled;
 	if (key == GLFW_KEY_C && action == GLFW_PRESS)
 		colorFade = !colorFade;
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+		pause = !pause;
 	if (key == GLFW_KEY_PAGE_UP && action == GLFW_PRESS)
 	{
 		particleCount += 1024;
