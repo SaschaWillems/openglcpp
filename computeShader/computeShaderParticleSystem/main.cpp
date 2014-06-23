@@ -41,6 +41,65 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+static void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
+{
+	std::string msgSource;
+	switch (source){
+	case GL_DEBUG_SOURCE_API:
+		msgSource = "WINDOW_SYSTEM";
+		break;
+	case GL_DEBUG_SOURCE_SHADER_COMPILER:
+		msgSource = "SHADER_COMPILER";
+		break;
+	case GL_DEBUG_SOURCE_THIRD_PARTY:
+		msgSource = "THIRD_PARTY";
+		break;
+	case GL_DEBUG_SOURCE_APPLICATION:
+		msgSource = "APPLICATION";
+		break;
+	case GL_DEBUG_SOURCE_OTHER:
+		msgSource = "OTHER";
+		break;
+	}
+
+	std::string msgType;
+	switch (type) {
+		case GL_DEBUG_TYPE_ERROR:
+			msgType = "ERROR";
+			break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+			msgType = "DEPRECATED_BEHAVIOR";
+			break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+			msgType = "UNDEFINED_BEHAVIOR";
+			break;
+		case GL_DEBUG_TYPE_PORTABILITY:
+			msgType = "PORTABILITY";
+			break;
+		case GL_DEBUG_TYPE_PERFORMANCE:
+			msgType = "PERFORMANCE";
+			break;
+		case GL_DEBUG_TYPE_OTHER:
+			msgType = "OTHER";
+			break;
+	}
+
+	std::string msgSeverity;
+	switch (severity){
+		case GL_DEBUG_SEVERITY_LOW:
+			msgSeverity = "LOW";
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+			msgSeverity = "MEDIUM";
+			break;
+		case GL_DEBUG_SEVERITY_HIGH:
+			msgSeverity = "HIGH";
+			break;
+	}
+
+	printf("glDebugMessage:\n%s \n type = %s source = %s severity = %s\n", message, msgType.c_str(), msgSource.c_str(), msgSeverity.c_str());
+}
+
 int main(void)
 {
 	//Set the error callback
@@ -56,6 +115,7 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//Declare a window object
@@ -91,6 +151,12 @@ int main(void)
 		return -1;
 	}
 
+	// Set debug callback
+	if (glDebugMessageCallback != NULL) {
+		glDebugMessageCallback(glDebugCallback, NULL);
+	}
+	glEnable(GL_DEBUG_OUTPUT);
+
 	// Output some info on the OpenGL implementation
 	const GLubyte* glvendor = glGetString(GL_VENDOR); 
 	const GLubyte* glrenderer = glGetString(GL_RENDERER);
@@ -118,8 +184,6 @@ int main(void)
 	printf("""page up"" : increase particle count by 1024\n");
 	printf("""page down"" : decrease particle count by 1024\n");
 
-
-	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

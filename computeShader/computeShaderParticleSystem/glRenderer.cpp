@@ -24,7 +24,7 @@ to move the particles towards the target position
 
 using namespace std;
 
-struct vertex3f {
+struct vertex4f {
 	GLfloat x, y, z, w;
 };
 
@@ -108,7 +108,7 @@ void glRenderer::printProgramLog(GLuint program)
 	GLint result = GL_FALSE;
 	int logLength;
 
-	glGetProgramiv(program, GL_COMPILE_STATUS, &result);
+	glGetProgramiv(program, GL_LINK_STATUS, &result);
 	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
 	if (logLength > 0) {
 		GLchar* strInfoLog = new GLchar[logLength + 1];
@@ -219,7 +219,7 @@ void glRenderer::resetPositionSSBO()
 	float destPosX = (float)(cursorX / (windowWidth)-0.5f) * 2.0f;
 	float destPosY = (float)((windowHeight - cursorY) / windowHeight - 0.5f) * 2.0f;
 
-	struct vertex3f* verticesPos = (struct vertex3f*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, particleCount * sizeof(vertex3f), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+	struct vertex4f* verticesPos = (struct vertex4f*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, particleCount * sizeof(vertex4f), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 	for (int i = 0; i < particleCount; i++) {
 		float rnd = (float)rand() / (float)(RAND_MAX);
 		float rndVal = (float)rand() / (float)(RAND_MAX / (360.0f * 3.14f * 2.0f));
@@ -234,7 +234,7 @@ void glRenderer::resetPositionSSBO()
 
 void glRenderer::resetVelocitySSBO()
 {
-	struct vertex3f* verticesVel = (struct vertex3f*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, particleCount * sizeof(vertex3f), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+	struct vertex4f* verticesVel = (struct vertex4f*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, particleCount * sizeof(vertex4f), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 	for (int i = 0; i < particleCount; i++) {
 		verticesVel[i].x = 0.0f;
 		verticesVel[i].y = 0.0f;
@@ -254,6 +254,13 @@ void glRenderer::resetBuffers()
 
 void glRenderer::generateBuffers()
 {
+	// No more default VAO with OpenGL 3.3+ core profile context,
+	// so in order to make our SSBOs render create and bind a VAO
+	// that's never used again
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
 	// Position SSBO
 	if (glIsBuffer(SSBOPos)) {
 		glDeleteBuffers(1, &SSBOPos);
@@ -262,7 +269,7 @@ void glRenderer::generateBuffers()
 	// Bind to SSBO
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBOPos);
 	// Generate empty storage for the SSBO
-	glBufferData(GL_SHADER_STORAGE_BUFFER, particleCount * sizeof(vertex3f), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, particleCount * sizeof(vertex4f), NULL, GL_STATIC_DRAW);
 	// Fill
 	resetPositionSSBO();
 	// Bind buffer to target index 0
@@ -276,10 +283,9 @@ void glRenderer::generateBuffers()
 	// Bind to SSBO
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBOVel);
 	// Generate empty storage for the SSBO
-	glBufferData(GL_SHADER_STORAGE_BUFFER, particleCount * sizeof(vertex3f), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, particleCount * sizeof(vertex4f), NULL, GL_STATIC_DRAW);
 	// Fill
 	resetVelocitySSBO();
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	// Bind buffer to target index 1
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBOVel);
 
