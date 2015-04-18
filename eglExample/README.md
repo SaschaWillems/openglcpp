@@ -1,6 +1,6 @@
 # EGL example
 
-<a href="./screenshot.png"><img src="./screenshot.png" width="300px">
+<a href="./screenshot.png"><img src="./screenshot.png" width="300px"></a>
 
 ## About
 This is a basic demo showing how to use Khronos' EGL API for rendering OpenGL ES 2.0 on a windows desktop.
