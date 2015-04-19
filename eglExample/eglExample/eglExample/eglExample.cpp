@@ -18,6 +18,7 @@ Other vendors (NVIDIA, INTEL) expose OpenGL ES on via WGL extensions.
 #include <GLES2/gl2.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <sstream>
 
 using namespace std;
 
@@ -213,7 +214,7 @@ void renderScene(double timeFactor) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	matrices.modelView = glm::mat4();
-	matrices.modelView = glm::translate(matrices.modelView, glm::vec3(0.0f, 0.0f, -10.0f));
+	matrices.modelView = glm::translate(matrices.modelView, glm::vec3(0.0f, 0.0f, -6.0f));
 	matrices.modelView = glm::rotate(matrices.modelView, deg_to_rad(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 	matrices.modelView = glm::rotate(matrices.modelView, deg_to_rad(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -227,6 +228,21 @@ void renderScene(double timeFactor) {
 	glErrorLog();
 
 	rotation.y += (rotation.y < 360.0) ? timeFactor : -360.0f + timeFactor;
+}
+
+void outputGLESInfo() {
+	cout << "GL_VENDOR = " << glGetString(GL_VENDOR) << "\n";
+	cout << "GL_RENDERER = " << glGetString(GL_RENDERER) << "\n";
+	cout << "GL_VERSION = " << glGetString(GL_VERSION) << "\n";
+	cout << "GL_SHADING_LANGUAGE_VERSION = " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
+	cout << "Extensions :\n";
+	string extBuffer;
+	stringstream extStream; 
+	extStream << glGetString(GL_EXTENSIONS);
+	while (extStream >> extBuffer) {
+		cout << extBuffer << "\n";
+	}
+
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -305,14 +321,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	for (int i = 0; i < eglNumConfigs; i++) {
 		cout << "Config " << i << "\n";
-		cout << "EGL_RENDERABLE_TYPE : ";
+		cout << "Supported APIs :\n";
 		int eglRenderable;
 		eglGetConfigAttrib(eglDisplay, eglConfigs[i], EGL_RENDERABLE_TYPE, &eglRenderable);
-		if (eglRenderable & EGL_OPENGL_ES_BIT) cout << "OPENGL ES ";
-		if (eglRenderable & EGL_OPENGL_ES2_BIT) cout << "OPENGL ES2 ";
-		if (eglRenderable & EGL_OPENVG_BIT) cout << "OPENVG ";
-		if (eglRenderable & EGL_OPENGL_BIT) cout << "OPENGL ";				
-		cout << "\n\n";
+		if (eglRenderable & EGL_OPENGL_ES_BIT) cout << "OPENGL ES" << "\n";
+		if (eglRenderable & EGL_OPENGL_ES2_BIT) cout << "OPENGL ES2" << "\n";
+		if (eglRenderable & EGL_OPENVG_BIT) cout << "OPENVG" << "\n";
+		if (eglRenderable & EGL_OPENGL_BIT) cout << "OPENGL" << "\n";
+		cout << "\n";
 	}
 
 	EGLint attr[] = {      
@@ -330,6 +346,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
+	outputGLESInfo();
 	initScene();
 
 	// Render loop
