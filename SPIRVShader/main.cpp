@@ -156,9 +156,9 @@ public:
 		// Update matrices
 		uboVS.projection = glm::perspective(glm::radians(60.0f), (float)1280 / (float)720, 0.1f, 256.0f);
 
-		uboVS.view = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, zoom));
+		uboVS.view = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, zoom));
 
-		uboVS.model = glm::mat4();
+		uboVS.model = glm::mat4(1.0);
 		uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		uboVS.model = glm::rotate(uboVS.model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -232,7 +232,7 @@ public:
 		glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 9);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
 
